@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Energie & Strom – Alltagsrechner</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="topnav">
+  <a class="topnav-brand" href="../index.html">🧮 ALLTAGS<em>RECHNER</em></a>
+  <a href="../index.html">Start</a>
+  <a href="brutto-netto.html">💼 Brutto-Netto</a>
+  <a href="datum.html">📅 Datum</a>
+  <a href="prozent.html">% Prozent</a>
+  <a href="energie.html" class="active">⚡ Energie</a>
+</nav>
+<div class="container">
+  <h1 class="page-title">⚡ Energie & <em>Strom</em></h1>
+  <p class="page-sub">Stromkosten, Gas m³↔kWh, Gerätekosten, Anbieterwechsel</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('strom')">⚡ Strom</button>
+    <button class="tab" onclick="switchTab('gas')">🔥 Gas</button>
+    <button class="tab" onclick="switchTab('geraet')">🔌 Gerätekosten</button>
+    <button class="tab" onclick="switchTab('wechsel')">🔄 Anbieterwechsel</button>
+  </div>
+
+  <!-- Strom -->
+  <div id="tab-strom" class="card">
+    <div class="card-title">⚡ Stromkostenrechner</div>
+    <div class="row-3">
+      <div class="field"><label>Jahresverbrauch (kWh)</label><input type="number" id="st-kwh" placeholder="3500"></div>
+      <div class="field"><label>Arbeitspreis (ct/kWh)</label><input type="number" id="st-ap" placeholder="32.5" step="0.1"></div>
+      <div class="field"><label>Grundpreis (€/Monat)</label><input type="number" id="st-gp" placeholder="10.50" step="0.01"></div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcStrom()">Berechnen</button></div>
+    <div id="st-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label">Arbeitskosten/Jahr</span><span class="value" id="st-ak"></span></div>
+      <div class="result-row"><span class="label">Grundpreis/Jahr</span><span class="value" id="st-gj"></span></div>
+      <div class="result-row"><span class="label">Gesamtkosten/Jahr</span><span class="value result-big" id="st-ges" style="font-size:1.4rem"></span></div>
+      <div class="result-row"><span class="label">Kosten/Monat</span><span class="value" id="st-mon"></span></div>
+      <div class="result-row"><span class="label">Kosten/Tag</span><span class="value" id="st-tag"></span></div>
+    </div>
+  </div>
+
+  <!-- Gas -->
+  <div id="tab-gas" class="card" style="display:none">
+    <div class="card-title">🔥 Gas – m³ ↔ kWh</div>
+    <div style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">Umrechnung via Brennwert (Hs) und Zustandszahl (Z)</div>
+    <div class="row-3">
+      <div class="field"><label>Brennwert Hs (kWh/m³)</label><input type="number" id="gs-hs" value="10.55" step="0.01"></div>
+      <div class="field"><label>Zustandszahl Z</label><input type="number" id="gs-z" value="0.9641" step="0.0001"></div>
+      <div class="field"><label>Gaspreis (ct/kWh)</label><input type="number" id="gs-preis" placeholder="12.5" step="0.1"></div>
+    </div>
+    <div class="tabs" style="margin-bottom:1rem">
+      <button class="tab active" onclick="gsMode='m3';this.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">m³ → kWh</button>
+      <button class="tab" onclick="gsMode='kwh';this.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">kWh → m³</button>
+    </div>
+    <div class="field"><label id="gs-input-label">Verbrauch (m³)</label><input type="number" id="gs-val" placeholder="1200"></div>
+    <div class="btns"><button class="btn" onclick="calcGas()">Berechnen</button></div>
+    <div id="gs-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label" id="gs-r1l"></span><span class="value" id="gs-r1v"></span></div>
+      <div class="result-row"><span class="label" id="gs-r2l"></span><span class="value" id="gs-r2v"></span></div>
+      <div class="result-row"><span class="label">Kosten</span><span class="value" id="gs-kosten"></span></div>
+    </div>
+  </div>
+
+  <!-- Gerät -->
+  <div id="tab-geraet" class="card" style="display:none">
+    <div class="card-title">🔌 Gerätekosten</div>
+    <div class="row-2">
+      <div class="field"><label>Leistung (Watt)</label><input type="number" id="gr-watt" placeholder="2000"></div>
+      <div class="field"><label>Nutzung (Stunden/Tag)</label><input type="number" id="gr-std" placeholder="2" step="0.5"></div>
+      <div class="field"><label>Strompreis (ct/kWh)</label><input type="number" id="gr-preis" placeholder="32.5" step="0.1"></div>
+      <div class="field"><label>Tage/Jahr</label><input type="number" id="gr-tage" value="365"></div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcGeraet()">Berechnen</button></div>
+    <div id="gr-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label">Verbrauch/Tag</span><span class="value" id="gr-vtag"></span></div>
+      <div class="result-row"><span class="label">Verbrauch/Monat</span><span class="value" id="gr-vmon"></span></div>
+      <div class="result-row"><span class="label">Verbrauch/Jahr</span><span class="value" id="gr-vj"></span></div>
+      <div class="result-row"><span class="label">Kosten/Tag</span><span class="value" id="gr-ktag"></span></div>
+      <div class="result-row"><span class="label">Kosten/Monat</span><span class="value" id="gr-kmon"></span></div>
+      <div class="result-row"><span class="label">Kosten/Jahr</span><span class="value result-big" id="gr-kj" style="font-size:1.4rem"></span></div>
+    </div>
+  </div>
+
+  <!-- Wechsel -->
+  <div id="tab-wechsel" class="card" style="display:none">
+    <div class="card-title">🔄 Anbieterwechsel – Einsparpotenzial</div>
+    <div class="field"><label>Jahresverbrauch (kWh)</label><input type="number" id="wk-kwh" placeholder="3500"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:.9rem">
+      <div>
+        <div style="font-size:.75rem;font-weight:600;color:var(--accent);text-transform:uppercase;margin-bottom:.5rem">Aktueller Anbieter</div>
+        <div class="field"><label>Arbeitspreis (ct/kWh)</label><input type="number" id="wk-ap1" placeholder="35.0" step="0.1"></div>
+        <div class="field"><label>Grundpreis (€/Monat)</label><input type="number" id="wk-gp1" placeholder="12.00" step="0.01"></div>
+      </div>
+      <div>
+        <div style="font-size:.75rem;font-weight:600;color:var(--green);text-transform:uppercase;margin-bottom:.5rem">Neuer Anbieter</div>
+        <div class="field"><label>Arbeitspreis (ct/kWh)</label><input type="number" id="wk-ap2" placeholder="28.0" step="0.1"></div>
+        <div class="field"><label>Grundpreis (€/Monat)</label><input type="number" id="wk-gp2" placeholder="9.00" step="0.01"></div>
+      </div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcWechsel()">Berechnen</button></div>
+    <div id="wk-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label">Kosten aktuell/Jahr</span><span class="value badge badge-red" id="wk-k1"></span></div>
+      <div class="result-row"><span class="label">Kosten neu/Jahr</span><span class="value badge badge-green" id="wk-k2"></span></div>
+      <div class="result-row"><span class="label">Ersparnis/Jahr</span><span class="value result-big" id="wk-ers" style="font-size:1.5rem"></span></div>
+      <div class="result-row"><span class="label">Ersparnis/Monat</span><span class="value" id="wk-erm"></span></div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/nav.js"></script>
+<script>
+const fmtE = n => n.toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+let gsMode = 'm3';
+
+function switchTab(id) {
+  document.querySelectorAll('.tabs:first-of-type .tab').forEach((t,i)=>
+    t.classList.toggle('active',['strom','gas','geraet','wechsel'][i]===id));
+  ['strom','gas','geraet','wechsel'].forEach(t=>document.getElementById('tab-'+t).style.display=t===id?'block':'none');
+}
+
+function calcStrom(){
+  const kwh=+document.getElementById('st-kwh').value,ap=+document.getElementById('st-ap').value/100,gp=+document.getElementById('st-gp').value;
+  const ak=kwh*ap,gj=gp*12,ges=ak+gj;
+  document.getElementById('st-ak').textContent=fmtE(ak);
+  document.getElementById('st-gj').textContent=fmtE(gj);
+  document.getElementById('st-ges').textContent=fmtE(ges);
+  document.getElementById('st-mon').textContent=fmtE(ges/12);
+  document.getElementById('st-tag').textContent=fmtE(ges/365);
+  document.getElementById('st-result').style.display='block';
+}
+
+function calcGas(){
+  const hs=+document.getElementById('gs-hs').value,z=+document.getElementById('gs-z').value;
+  const preis=+document.getElementById('gs-preis').value/100,val=+document.getElementById('gs-val').value;
+  let m3,kwh;
+  if(gsMode==='m3'){m3=val;kwh=m3*hs*z;}
+  else{kwh=val;m3=kwh/(hs*z);}
+  const kosten=kwh*preis;
+  document.getElementById('gs-r1l').textContent=gsMode==='m3'?'Kubikmeter (m³)':'Kilowattstunden (kWh)';
+  document.getElementById('gs-r1v').textContent=gsMode==='m3'?m3.toFixed(1)+' m³':kwh.toFixed(1)+' kWh';
+  document.getElementById('gs-r2l').textContent=gsMode==='m3'?'Kilowattstunden (kWh)':'Kubikmeter (m³)';
+  document.getElementById('gs-r2v').textContent=gsMode==='m3'?kwh.toFixed(1)+' kWh':m3.toFixed(1)+' m³';
+  document.getElementById('gs-kosten').textContent=fmtE(kosten);
+  document.getElementById('gs-result').style.display='block';
+}
+
+function calcGeraet(){
+  const w=+document.getElementById('gr-watt').value,std=+document.getElementById('gr-std').value;
+  const preis=+document.getElementById('gr-preis').value/100,tage=+document.getElementById('gr-tage').value;
+  const vtag=w*std/1000,vmon=vtag*30.44,vj=vtag*tage;
+  document.getElementById('gr-vtag').textContent=vtag.toFixed(3)+' kWh';
+  document.getElementById('gr-vmon').textContent=vmon.toFixed(1)+' kWh';
+  document.getElementById('gr-vj').textContent=vj.toFixed(1)+' kWh';
+  document.getElementById('gr-ktag').textContent=fmtE(vtag*preis);
+  document.getElementById('gr-kmon').textContent=fmtE(vmon*preis);
+  document.getElementById('gr-kj').textContent=fmtE(vj*preis);
+  document.getElementById('gr-result').style.display='block';
+}
+
+function calcWechsel(){
+  const kwh=+document.getElementById('wk-kwh').value;
+  const ap1=+document.getElementById('wk-ap1').value/100,gp1=+document.getElementById('wk-gp1').value;
+  const ap2=+document.getElementById('wk-ap2').value/100,gp2=+document.getElementById('wk-gp2').value;
+  const k1=kwh*ap1+gp1*12,k2=kwh*ap2+gp2*12,ers=k1-k2;
+  document.getElementById('wk-k1').textContent=fmtE(k1);
+  document.getElementById('wk-k2').textContent=fmtE(k2);
+  document.getElementById('wk-ers').textContent=(ers>0?'+ ':'')+fmtE(ers);
+  document.getElementById('wk-erm').textContent=(ers>0?'+ ':'')+fmtE(ers/12);
+  document.getElementById('wk-result').style.display='block';
+}
+</script>
+</body></html>

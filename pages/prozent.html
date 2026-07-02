@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prozent & Dreisatz – Alltagsrechner</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="topnav">
+  <a class="topnav-brand" href="../index.html">🧮 ALLTAGS<em>RECHNER</em></a>
+  <a href="../index.html">Start</a>
+  <a href="brutto-netto.html">💼 Brutto-Netto</a>
+  <a href="datum.html">📅 Datum</a>
+  <a href="prozent.html" class="active">% Prozent</a>
+  <a href="energie.html">⚡ Energie</a>
+</nav>
+<div class="container">
+  <h1 class="page-title">% Prozent & <em>Dreisatz</em></h1>
+  <p class="page-sub">Prozentrechner, Rabatt, MwSt, Dreisatz und Trinkgeld</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('prozent')">% Prozent</button>
+    <button class="tab" onclick="switchTab('rabatt')">🏷 Rabatt</button>
+    <button class="tab" onclick="switchTab('mwst')">🧾 MwSt</button>
+    <button class="tab" onclick="switchTab('dreisatz')">📐 Dreisatz</button>
+    <button class="tab" onclick="switchTab('trinkgeld')">🍽 Trinkgeld</button>
+  </div>
+
+  <!-- Prozent -->
+  <div id="tab-prozent" class="card">
+    <div class="card-title">% Prozentrechner</div>
+    <div class="tabs" style="margin-bottom:1rem">
+      <button class="tab active" onclick="switchMode('pct1')">X% von Y</button>
+      <button class="tab" onclick="switchMode('pct2')">X ist Y% von?</button>
+      <button class="tab" onclick="switchMode('pct3')">Wie viel % ist X von Y?</button>
+      <button class="tab" onclick="switchMode('pct4')">Änderung %</button>
+    </div>
+    <div id="m-pct1">
+      <div class="row-2">
+        <div class="field"><label>Prozentsatz (%)</label><input type="number" id="p1-pct" placeholder="19"></div>
+        <div class="field"><label>Grundwert</label><input type="number" id="p1-gw" placeholder="100"></div>
+      </div>
+    </div>
+    <div id="m-pct2" style="display:none">
+      <div class="row-2">
+        <div class="field"><label>Prozentwert (X)</label><input type="number" id="p2-pw" placeholder="19"></div>
+        <div class="field"><label>Prozentsatz (%)</label><input type="number" id="p2-pct" placeholder="19"></div>
+      </div>
+    </div>
+    <div id="m-pct3" style="display:none">
+      <div class="row-2">
+        <div class="field"><label>Teil (X)</label><input type="number" id="p3-x" placeholder="19"></div>
+        <div class="field"><label>Ganzes (Y)</label><input type="number" id="p3-y" placeholder="100"></div>
+      </div>
+    </div>
+    <div id="m-pct4" style="display:none">
+      <div class="row-2">
+        <div class="field"><label>Ursprungswert</label><input type="number" id="p4-alt" placeholder="80"></div>
+        <div class="field"><label>Neuer Wert</label><input type="number" id="p4-neu" placeholder="100"></div>
+      </div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcPct()">Berechnen</button></div>
+    <div id="pct-result" class="result-box" style="display:none;margin-top:1rem;text-align:center">
+      <div class="result-big" id="pct-out"></div>
+      <div class="result-sub" id="pct-sub"></div>
+    </div>
+  </div>
+
+  <!-- Rabatt -->
+  <div id="tab-rabatt" class="card" style="display:none">
+    <div class="card-title">🏷 Rabattrechner</div>
+    <div class="row-2">
+      <div class="field"><label>Originalpreis (€)</label><input type="number" id="rb-preis" placeholder="99.90"></div>
+      <div class="field"><label>Rabatt (%)</label><input type="number" id="rb-pct" placeholder="20"></div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcRabatt()">Berechnen</button></div>
+    <div id="rb-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label">Originalpreis</span><span class="value" id="rb-orig"></span></div>
+      <div class="result-row"><span class="label">Rabattbetrag</span><span class="value badge badge-red" id="rb-betrag"></span></div>
+      <div class="result-row"><span class="label">Endpreis</span><span class="value result-big" id="rb-end" style="font-size:1.4rem"></span></div>
+      <div class="result-row"><span class="label">Ersparnis</span><span class="value badge badge-green" id="rb-ersparnis"></span></div>
+    </div>
+  </div>
+
+  <!-- MwSt -->
+  <div id="tab-mwst" class="card" style="display:none">
+    <div class="card-title">🧾 Mehrwertsteuer</div>
+    <div class="row-2">
+      <div class="field"><label>Betrag (€)</label><input type="number" id="mw-betrag" placeholder="119"></div>
+      <div class="field"><label>MwSt-Satz</label>
+        <select id="mw-satz">
+          <option value="19">19 % (Regelsteuersatz)</option>
+          <option value="7">7 % (ermäßigt)</option>
+          <option value="0">0 % (steuerfrei)</option>
+        </select>
+      </div>
+    </div>
+    <div class="tabs" style="margin-bottom:1rem">
+      <button class="tab active" onclick="mwMode='brutto';this.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">Brutto → Netto</button>
+      <button class="tab" onclick="mwMode='netto';this.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">Netto → Brutto</button>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcMwSt()">Berechnen</button></div>
+    <div id="mw-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label">Netto</span><span class="value" id="mw-netto"></span></div>
+      <div class="result-row"><span class="label">MwSt-Anteil</span><span class="value" id="mw-steuer"></span></div>
+      <div class="result-row"><span class="label">Brutto</span><span class="value" id="mw-brutto"></span></div>
+    </div>
+  </div>
+
+  <!-- Dreisatz -->
+  <div id="tab-dreisatz" class="card" style="display:none">
+    <div class="card-title">📐 Dreisatz</div>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">Wenn A → B, was ist dann C → ?</p>
+    <div class="row-3">
+      <div class="field"><label>Bekannte Menge (A)</label><input type="number" id="ds-a" placeholder="5"></div>
+      <div class="field"><label>Bekannter Wert (B)</label><input type="number" id="ds-b" placeholder="3.50"></div>
+      <div class="field"><label>Gesuchte Menge (C)</label><input type="number" id="ds-c" placeholder="8"></div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcDreisatz()">Berechnen</button></div>
+    <div id="ds-result" class="result-box" style="display:none;margin-top:1rem;text-align:center">
+      <div class="result-big" id="ds-out"></div>
+      <div class="result-sub" id="ds-sub"></div>
+    </div>
+  </div>
+
+  <!-- Trinkgeld -->
+  <div id="tab-trinkgeld" class="card" style="display:none">
+    <div class="card-title">🍽 Trinkgeldrechner</div>
+    <div class="row-2">
+      <div class="field"><label>Rechnungsbetrag (€)</label><input type="number" id="tg-betrag" placeholder="45.80"></div>
+      <div class="field"><label>Anzahl Personen</label><input type="number" id="tg-pers" value="1" min="1"></div>
+    </div>
+    <div class="btns">
+      <button class="btn btn-sm btn-outline" onclick="calcTG(5)">5 %</button>
+      <button class="btn btn-sm btn-outline" onclick="calcTG(10)">10 %</button>
+      <button class="btn btn-sm btn-outline" onclick="calcTG(12)">12 %</button>
+      <button class="btn btn-sm btn-outline" onclick="calcTG(15)">15 %</button>
+      <button class="btn btn-sm btn-outline" onclick="calcTG(20)">20 %</button>
+    </div>
+    <div id="tg-result" class="result-box" style="display:none;margin-top:1rem">
+      <div id="tg-rows"></div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/nav.js"></script>
+<script>
+const fmtE = n => n.toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+const fmtN = n => n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+let mwMode = 'brutto', pctMode = 'pct1';
+
+function switchTab(id) {
+  document.querySelectorAll('.tabs:first-of-type .tab').forEach((t,i) =>
+    t.classList.toggle('active',['prozent','rabatt','mwst','dreisatz','trinkgeld'][i]===id));
+  ['prozent','rabatt','mwst','dreisatz','trinkgeld'].forEach(t =>
+    document.getElementById('tab-'+t).style.display = t===id?'block':'none');
+}
+function switchMode(m) {
+  pctMode = m;
+  document.querySelectorAll('#tab-prozent .tabs .tab').forEach((t,i) =>
+    t.classList.toggle('active',['pct1','pct2','pct3','pct4'][i]===m));
+  ['pct1','pct2','pct3','pct4'].forEach(id => document.getElementById('m-'+id).style.display = id===m?'block':'none');
+}
+function calcPct() {
+  let out='', sub='';
+  if(pctMode==='pct1'){const p=+document.getElementById('p1-pct').value,g=+document.getElementById('p1-gw').value;const r=g*p/100;out=fmtN(r);sub=`${p}% von ${fmtN(g)} = ${fmtN(r)}`;}
+  else if(pctMode==='pct2'){const pw=+document.getElementById('p2-pw').value,p=+document.getElementById('p2-pct').value;const r=pw/(p/100);out=fmtN(r);sub=`${fmtN(pw)} ist ${p}% von ${fmtN(r)}`;}
+  else if(pctMode==='pct3'){const x=+document.getElementById('p3-x').value,y=+document.getElementById('p3-y').value;const r=x/y*100;out=fmtN(r)+' %';sub=`${fmtN(x)} ist ${fmtN(r)}% von ${fmtN(y)}`;}
+  else{const alt=+document.getElementById('p4-alt').value,neu=+document.getElementById('p4-neu').value;const r=(neu-alt)/alt*100;out=(r>0?'+':'')+fmtN(r)+' %';sub=r>0?`Steigerung um ${fmtN(r)}%`:`Rückgang um ${fmtN(Math.abs(r))}%`;}
+  document.getElementById('pct-out').textContent=out;
+  document.getElementById('pct-sub').textContent=sub;
+  document.getElementById('pct-result').style.display='block';
+}
+function calcRabatt(){
+  const p=+document.getElementById('rb-preis').value,r=+document.getElementById('rb-pct').value;
+  const b=p*r/100,e=p-b;
+  document.getElementById('rb-orig').textContent=fmtE(p);
+  document.getElementById('rb-betrag').textContent='− '+fmtE(b);
+  document.getElementById('rb-end').textContent=fmtE(e);
+  document.getElementById('rb-ersparnis').textContent='Sie sparen '+fmtE(b);
+  document.getElementById('rb-result').style.display='block';
+}
+function calcMwSt(){
+  const b=+document.getElementById('mw-betrag').value,s=+document.getElementById('mw-satz').value/100;
+  let netto,brutto,steuer;
+  if(mwMode==='brutto'){brutto=b;netto=b/(1+s);steuer=brutto-netto;}
+  else{netto=b;steuer=b*s;brutto=b+steuer;}
+  document.getElementById('mw-netto').textContent=fmtE(netto);
+  document.getElementById('mw-steuer').textContent=fmtE(steuer);
+  document.getElementById('mw-brutto').textContent=fmtE(brutto);
+  document.getElementById('mw-result').style.display='block';
+}
+function calcDreisatz(){
+  const a=+document.getElementById('ds-a').value,b=+document.getElementById('ds-b').value,c=+document.getElementById('ds-c').value;
+  const r=b/a*c;
+  document.getElementById('ds-out').textContent=fmtN(r);
+  document.getElementById('ds-sub').textContent=`Wenn ${fmtN(a)} → ${fmtN(b)}, dann ${fmtN(c)} → ${fmtN(r)}`;
+  document.getElementById('ds-result').style.display='block';
+}
+function calcTG(pct){
+  const b=+document.getElementById('tg-betrag').value,n=+document.getElementById('tg-pers').value||1;
+  const tg=b*pct/100,ges=b+tg,pp=ges/n;
+  document.getElementById('tg-rows').innerHTML=`
+    <div class="result-row"><span class="label">Rechnungsbetrag</span><span class="value">${fmtE(b)}</span></div>
+    <div class="result-row"><span class="label">Trinkgeld (${pct}%)</span><span class="value">${fmtE(tg)}</span></div>
+    <div class="result-row"><span class="label">Gesamtbetrag</span><span class="value">${fmtE(ges)}</span></div>
+    <div class="result-row"><span class="label">Pro Person (${n})</span><span class="value result-big" style="font-size:1.3rem">${fmtE(pp)}</span></div>`;
+  document.getElementById('tg-result').style.display='block';
+}
+</script>
+</body></html>

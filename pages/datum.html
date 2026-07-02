@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Datum & Kalender – Alltagsrechner</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="topnav">
+  <a class="topnav-brand" href="../index.html">🧮 ALLTAGS<em>RECHNER</em></a>
+  <a href="../index.html">Start</a>
+  <a href="brutto-netto.html">💼 Brutto-Netto</a>
+  <a href="datum.html" class="active">📅 Datum</a>
+  <a href="prozent.html">% Prozent</a>
+  <a href="energie.html">⚡ Energie</a>
+</nav>
+<div class="container">
+  <h1 class="page-title">📅 Datum & <em>Kalender</em></h1>
+  <p class="page-sub">Countdown, Tagesdifferenz, Alter berechnen, Datum addieren, Kalenderwochen</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('countdown')">⏳ Countdown</button>
+    <button class="tab" onclick="switchTab('differenz')">📐 Differenz</button>
+    <button class="tab" onclick="switchTab('alter')">🎂 Alter</button>
+    <button class="tab" onclick="switchTab('addieren')">➕ Datum addieren</button>
+    <button class="tab" onclick="switchTab('kw')">📆 Kalenderwoche</button>
+  </div>
+
+  <!-- Countdown -->
+  <div id="tab-countdown" class="card">
+    <div class="card-title">⏳ Countdown bis Datum</div>
+    <div class="row-2">
+      <div class="field"><label>Zieldatum</label><input type="date" id="cd-ziel"></div>
+      <div class="field"><label>Bezeichnung (optional)</label><input type="text" id="cd-name" placeholder="z.B. Sommerurlaub"></div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcCountdown()">Berechnen</button></div>
+    <div id="cd-result" class="result-box" style="display:none;text-align:center;margin-top:1rem">
+      <div id="cd-label" style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem"></div>
+      <div class="result-big" id="cd-days"></div>
+      <div class="result-sub" id="cd-sub"></div>
+    </div>
+  </div>
+
+  <!-- Differenz -->
+  <div id="tab-differenz" class="card" style="display:none">
+    <div class="card-title">📐 Tagesdifferenz</div>
+    <div class="row-2">
+      <div class="field"><label>Von</label><input type="date" id="df-von"></div>
+      <div class="field"><label>Bis</label><input type="date" id="df-bis"></div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcDiff()">Berechnen</button></div>
+    <div id="df-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label">Tage gesamt</span><span class="value" id="df-tage"></span></div>
+      <div class="result-row"><span class="label">Wochen + Resttage</span><span class="value" id="df-wochen"></span></div>
+      <div class="result-row"><span class="label">Monate (ca.)</span><span class="value" id="df-monate"></span></div>
+      <div class="result-row"><span class="label">Arbeitstage (Mo–Fr)</span><span class="value" id="df-arbeit"></span></div>
+    </div>
+  </div>
+
+  <!-- Alter -->
+  <div id="tab-alter" class="card" style="display:none">
+    <div class="card-title">🎂 Alter berechnen</div>
+    <div class="row-2">
+      <div class="field"><label>Geburtsdatum</label><input type="date" id="al-geb"></div>
+      <div class="field"><label>Stichtag (leer = heute)</label><input type="date" id="al-heute"></div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcAlter()">Berechnen</button></div>
+    <div id="al-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label">Alter</span><span class="value" id="al-jahre"></span></div>
+      <div class="result-row"><span class="label">Genau</span><span class="value" id="al-genau"></span></div>
+      <div class="result-row"><span class="label">Tage gelebt</span><span class="value" id="al-tage"></span></div>
+      <div class="result-row"><span class="label">Nächster Geburtstag</span><span class="value" id="al-naechst"></span></div>
+    </div>
+  </div>
+
+  <!-- Addieren -->
+  <div id="tab-addieren" class="card" style="display:none">
+    <div class="card-title">➕ Datum addieren / subtrahieren</div>
+    <div class="row-2">
+      <div class="field"><label>Ausgangsdatum</label><input type="date" id="ad-datum"></div>
+      <div class="field"><label>Tage (negativ = subtrahieren)</label><input type="number" id="ad-tage" placeholder="30"></div>
+    </div>
+    <div class="btns"><button class="btn" onclick="calcAddieren()">Berechnen</button></div>
+    <div id="ad-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label">Ergebnis-Datum</span><span class="value" id="ad-res"></span></div>
+      <div class="result-row"><span class="label">Wochentag</span><span class="value" id="ad-wt"></span></div>
+      <div class="result-row"><span class="label">Kalenderwoche</span><span class="value" id="ad-kw"></span></div>
+    </div>
+  </div>
+
+  <!-- KW -->
+  <div id="tab-kw" class="card" style="display:none">
+    <div class="card-title">📆 Kalenderwoche</div>
+    <div class="row-2">
+      <div class="field"><label>Datum</label><input type="date" id="kw-datum"></div>
+      <div class="field" style="align-self:end"><button class="btn" onclick="calcKW()" style="width:100%">Berechnen</button></div>
+    </div>
+    <div id="kw-result" class="result-box" style="display:none;margin-top:1rem">
+      <div class="result-row"><span class="label">Kalenderwoche (ISO)</span><span class="value" id="kw-nr"></span></div>
+      <div class="result-row"><span class="label">Wochentag</span><span class="value" id="kw-wt"></span></div>
+      <div class="result-row"><span class="label">Woche von … bis</span><span class="value" id="kw-span"></span></div>
+      <div class="result-row"><span class="label">Tag des Jahres</span><span class="value" id="kw-doy"></span></div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/nav.js"></script>
+<script>
+const WT = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const fmtD = d => d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['countdown','differenz','alter','addieren','kw'][i]===id));
+  ['countdown','differenz','alter','addieren','kw'].forEach(t => document.getElementById('tab-'+t).style.display = t===id?'block':'none');
+}
+
+function getKW(d) {
+  const tmp = new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  const day = tmp.getUTCDay()||7;
+  tmp.setUTCDate(tmp.getUTCDate()+4-day);
+  const y = tmp.getUTCFullYear();
+  const start = new Date(Date.UTC(y,0,1));
+  return {kw:Math.ceil((((tmp-start)/86400000)+1)/7), year:y};
+}
+
+function calcCountdown() {
+  const ziel = new Date(document.getElementById('cd-ziel').value);
+  const name = document.getElementById('cd-name').value || 'Zieldatum';
+  if (isNaN(ziel)) return;
+  const heute = new Date(); heute.setHours(0,0,0,0);
+  const diff = Math.round((ziel-heute)/86400000);
+  document.getElementById('cd-label').textContent = name;
+  document.getElementById('cd-days').textContent = Math.abs(diff) + ' Tage';
+  document.getElementById('cd-sub').textContent = diff>=0 ? `noch ${diff} Tage bis ${fmtD(ziel)}` : `vor ${-diff} Tagen (${fmtD(ziel)})`;
+  document.getElementById('cd-result').style.display = 'block';
+}
+
+function calcDiff() {
+  const von = new Date(document.getElementById('df-von').value);
+  const bis = new Date(document.getElementById('df-bis').value);
+  if (isNaN(von)||isNaN(bis)) return;
+  const diff = Math.abs(Math.round((bis-von)/86400000));
+  let arbeit = 0, tmp = new Date(Math.min(von,bis));
+  for(let i=0;i<diff;i++){if(tmp.getDay()>0&&tmp.getDay()<6)arbeit++;tmp.setDate(tmp.getDate()+1);}
+  document.getElementById('df-tage').textContent = diff;
+  document.getElementById('df-wochen').textContent = `${Math.floor(diff/7)} Wochen, ${diff%7} Tage`;
+  document.getElementById('df-monate').textContent = (diff/30.44).toFixed(1);
+  document.getElementById('df-arbeit').textContent = arbeit;
+  document.getElementById('df-result').style.display = 'block';
+}
+
+function calcAlter() {
+  const geb = new Date(document.getElementById('al-geb').value);
+  const ref = document.getElementById('al-heute').value ? new Date(document.getElementById('al-heute').value) : new Date();
+  if (isNaN(geb)) return;
+  let jahre = ref.getFullYear()-geb.getFullYear();
+  let monate = ref.getMonth()-geb.getMonth();
+  let tage = ref.getDate()-geb.getDate();
+  if (tage<0){monate--;tage+=new Date(ref.getFullYear(),ref.getMonth(),0).getDate();}
+  if (monate<0){jahre--;monate+=12;}
+  const tagsGelebt = Math.round((ref-geb)/86400000);
+  const naechst = new Date(ref.getFullYear(),geb.getMonth(),geb.getDate());
+  if(naechst<ref)naechst.setFullYear(naechst.getFullYear()+1);
+  const bisBday = Math.round((naechst-ref)/86400000);
+  document.getElementById('al-jahre').textContent = jahre+' Jahre';
+  document.getElementById('al-genau').textContent = `${jahre} J, ${monate} M, ${tage} T`;
+  document.getElementById('al-tage').textContent = tagsGelebt.toLocaleString('de-DE');
+  document.getElementById('al-naechst').textContent = `${fmtD(naechst)} (in ${bisBday} Tagen)`;
+  document.getElementById('al-result').style.display='block';
+}
+
+function calcAddieren() {
+  const d = new Date(document.getElementById('ad-datum').value);
+  const n = parseInt(document.getElementById('ad-tage').value)||0;
+  if (isNaN(d)) return;
+  const res = new Date(d); res.setDate(res.getDate()+n);
+  const {kw,year} = getKW(res);
+  document.getElementById('ad-res').textContent = fmtD(res);
+  document.getElementById('ad-wt').textContent = WT[res.getDay()];
+  document.getElementById('ad-kw').textContent = `KW ${kw} / ${year}`;
+  document.getElementById('ad-result').style.display='block';
+}
+
+function calcKW() {
+  const d = new Date(document.getElementById('kw-datum').value);
+  if (isNaN(d)) return;
+  const {kw,year} = getKW(d);
+  const mon = new Date(d); mon.setDate(d.getDate()-(d.getDay()||7)+1);
+  const son = new Date(mon); son.setDate(mon.getDate()+6);
+  const doy = Math.ceil((d-new Date(d.getFullYear(),0,1))/86400000)+1;
+  document.getElementById('kw-nr').textContent = `KW ${kw} / ${year}`;
+  document.getElementById('kw-wt').textContent = WT[d.getDay()];
+  document.getElementById('kw-span').textContent = `${fmtD(mon)} – ${fmtD(son)}`;
+  document.getElementById('kw-doy').textContent = doy+'. Tag';
+  document.getElementById('kw-result').style.display='block';
+}
+
+// Heute vorbelegen
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0];
+  ['cd-ziel','df-von','df-bis','al-geb','al-heute','ad-datum','kw-datum'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.value) el.value = today;
+  });
+});
+</script>
+</body></html>
